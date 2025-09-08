@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>XD CHAT</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0b0f18; --bg2:#1b1228;
+  --accent1:#ff4d6d; --accent2:#6bf0ff;
+  --bubble:#111217; --me-bubble:#2b2b30;
+  --glass: rgba(255,255,255,0.04);
+}
+html,body{height:100%;margin:0;font-family:Roboto,system-ui,Arial;color:#eaeaea;background:
+radial-gradient(1200px 500px at 10% 10%, rgba(107,240,255,0.06), transparent 8%),
+radial-gradient(900px 400px at 90% 90%, rgba(255,77,109,0.05), transparent 8%),
+linear-gradient(180deg,var(--bg1),var(--bg2));}
+.app{max-width:980px;margin:28px auto;padding:18px;border-radius:14px;
+background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+box-shadow:0 10px 30px rgba(2,2,6,0.7);min-height:80vh;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{font-family:'Permanent Marker',cursive;font-size:28px;letter-spacing:1px;color:var(--accent1);text-shadow:0 2px 0 #000,0 6px 22px rgba(255,77,109,0.16);transform:rotate(-4deg);}
+.chat-wrap{display:flex;flex-direction:column;gap:12px;flex:1;}
+.messages{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.02));
+padding:14px;border-radius:10px;overflow:auto;display:flex;flex-direction:column;gap:10px;
+box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02);}
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:80%;
+padding:8px 10px;border-radius:10px;
+background:linear-gradient(180deg,var(--bubble),rgba(255,255,255,0.01));
+box-shadow:0 6px 18px rgba(0,0,0,0.5);
+border-left:4px solid rgba(255,255,255,0.02);}
+.msg.me{margin-left:auto;max-width:78%;
+background:linear-gradient(180deg,var(--me-bubble),rgba(255,255,255,0.01));
+border-right:4px solid rgba(107,240,255,0.06);}
+.avatar{width:46px;height:46px;border-radius:8px;overflow:hidden;flex:0 0 46px;
+background:linear-gradient(135deg,var(--accent2),var(--accent1));display:flex;align-items:center;justify-content:center;
+font-weight:700;color:#08121a;border:2px solid rgba(255,255,255,0.03);}
+.meta{font-size:13px;color:#cbd6df;}
+.nick{font-weight:700;font-size:13px;display:block;color:#fff;}
+.time{font-size:11px;color:#9fb0bf;margin-top:2px;}
+.bubble{margin-top:6px;line-height:1.4;white-space:pre-wrap;word-break:break-word;color:#e6eef5;font-size:15px;}
+.controls{display:flex;flex-direction:column;gap:4px;}
+.composer{display:flex;gap:8px;align-items:flex-end;}
+.input{background:var(--glass);border-radius:10px;padding:8px 12px;flex:1;min-height:56px;display:flex;}
+textarea{flex:1;border:0;outline:none;background:transparent;color:#eaf6ff;font-size:16px;resize:none;min-height:40px;max-height:150px;overflow-y:auto;}
+button{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.02));
+border:1px solid rgba(255,255,255,0.04);color:#e7f6ff;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;
+box-shadow:0 6px 18px rgba(0,0,0,0.45);}
+button:hover{transform:translateY(-2px);}
+#sendBtn{margin-left:auto;}
+#clearMyBtn{font-size:11px;padding:4px 6px;align-self:flex-end;}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.6),rgba(0,0,0,0.7));backdrop-filter:blur(4px);z-index:40;}
+.login{width:420px;background:linear-gradient(180deg,rgba(17,18,23,0.96),rgba(8,9,12,0.96));border-radius:12px;padding:18px;box-shadow:0 20px 80px rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.03);}
+.login h2{margin:0 0 8px 0;font-family:'Permanent Marker',cursive;color:var(--accent2);font-size:22px;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+input[type="text"],input[type="file"]{padding:10px;border-radius:8px;border:0;outline:none;background:#0f1114;color:#e6eef5;width:100%;}
+.avatar-preview{display:flex;gap:8px;align-items:center;}
+.avatar-preview img{width:56px;height:56px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,0.03);}
+.action-row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+.delete-btn{background:transparent;border:1px dashed rgba(255,255,255,0.04);color:#ffd966;padding:6px 8px;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="brand">
+    <div class="logo">XD CHAT</div>
+    <button id="logoutBtn" style="margin-left:auto;display:none;">Logout</button>
+  </div>
+
+  <div class="chat-wrap">
+    <div class="messages" id="messages" aria-live="polite"></div>
+
+    <div class="controls">
+      <div class="composer">
+        <div class="input">
+          <textarea id="msgInput" placeholder="Digite sua mensagem..." rows="1"></textarea>
+        </div>
+        <button id="sendBtn">Enviar</button>
+      </div>
+      <button id="clearMyBtn" class="delete-btn" title="Apaga somente suas mensagens">Apagar minhas</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="loginOverlay" aria-hidden="false">
+  <div class="login">
+    <h2>Entrar no XD CHAT</h2>
+    <div class="field">
+      <label>Apelido (obrigatório)</label>
+      <input type="text" id="nickInput" placeholder="Seu apelido..." maxlength="30" />
+    </div>
+    <div class="field">
+      <label>Avatar (opcional)</label>
+      <input type="file" id="avatarInput" accept="image/*" />
+      <div class="avatar-preview" id="avatarPreview" style="display:none;">
+        <img id="avatarImg" alt="Preview do avatar" />
+        <div style="font-size:12px;color:#9fb0bf">Avatar carregado</div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button id="enterBtn">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+<script>
+const MESSAGES_KEY='xdchat_messages';
+const USER_KEY='xdchat_user';
+let state={user:null,messages:[]};
+const $=id=>document.getElementById(id);
+const nowISO=()=>new Date().toISOString();
+const fmtTime=iso=>{const d=new Date(iso);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+function saveState(){localStorage.setItem(USER_KEY,JSON.stringify(state.user));localStorage.setItem(MESSAGES_KEY,JSON.stringify(state.messages));}
+function loadState(){try{state.user=JSON.parse(localStorage.getItem(USER_KEY));state.messages=JSON.parse(localStorage.getItem(MESSAGES_KEY))||[];}catch(e){state={user:null,messages:[]};}}
+function render(){
+  const messagesEl=$('messages');messagesEl.innerHTML='';
+  state.messages.forEach(msg=>{
+    const el=document.createElement('div');el.className='msg'+(state.user&&msg.nick===state.user.nick?' me':'');
+    const avatar=document.createElement('div');avatar.className='avatar';
+    if(msg.avatarDataUrl){const im=document.createElement('img');im.src=msg.avatarDataUrl;im.alt=msg.nick;im.style.width='100%';im.style.height='100%';im.style.objectFit='cover';avatar.appendChild(im);}
+    else{avatar.textContent=(msg.nick[0]||'?').toUpperCase();}
+    const body=document.createElement('div');body.style.flex='1';
+    const meta=document.createElement('div');meta.className='meta';
+    const nick=document.createElement('span');nick.className='nick';nick.textContent=msg.nick;
+    const time=document.createElement('span');time.className='time';time.textContent=' • '+fmtTime(msg.ts);
+    meta.appendChild(nick);meta.appendChild(time);
+    const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=msg.text;
+    body.appendChild(meta);body.appendChild(bubble);el.appendChild(avatar);el.appendChild(body);
+    if(state.user&&msg.nick===state.user.nick){const edit=document.createElement('button');edit.className='delete-btn';edit.textContent='Editar';edit.onclick=()=>editMessage(msg.id);el.appendChild(edit);}
+    messagesEl.appendChild(el);
+  });
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+  $('logoutBtn').style.display=state.user?'inline-block':'none';
+}
+function addMessage(text,notify=true){
+  if(!state.user) return alert('Faça login primeiro.');
+  const msg={id:'m_'+Math.random().toString(36).slice(2,9),nick:state.user.nick,avatarDataUrl:state.user.avatarDataUrl||null,text:text.trim(),ts:nowISO()};
+  if(!msg.text) return;
+  state.messages.push(msg);
+  saveState(); render();
+  if(msg.nick!==state.user.nick){const sound=$('notifSound');if(sound)sound.play();}
+  if(notify && Notification && Notification.permission==="granted"){if(document.hidden){new Notification(`${msg.nick} disse:`,{body: msg.text,icon:msg.avatarDataUrl||"https://i.imgur.com/0T9Vb3v.png"});}}}
+function editMessage(id){const msg=state.messages.find(m=>m.id===id);if(!msg)return;const novo=prompt("Editar mensagem:",msg.text);if(novo!==null){msg.text=novo.trim();saveState();render();}}
+function clearOnlyMyMessages(){if(state.user){state.messages=state.messages.filter(m=>m.nick!==state.user.nick);saveState();render();}}
+function showLogin(show=true){$('loginOverlay').style.display=show?'flex':'none';}
+function doLogin(nick,avatar){if(!nick.trim())return alert('Apelido obrigatório');state.user={nick:nick.trim(),avatarDataUrl:avatar||null};saveState();showLogin(false);render();}
+function doLogout(){if(confirm('Sair do chat? Todas as mensagens serão apagadas.')){state={user:null,messages:[]};localStorage.clear();showLogin(true);render();}}
+function readFileAsDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}
+function autoResizeTA(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function init(){
+  loadState();
+  if(!state.user) showLogin(true); else showLogin(false);
+  if(Notification && Notification.permission!=="granted") Notification.requestPermission();
+  $('avatarInput').addEventListener('change',async e=>{const f=e.target.files[0];if(!f){$('avatarPreview').style.display='none';return;}const d=await readFileAsDataURL(f);$('avatarImg').src=d;$('avatarPreview').style.display='flex';});
+  $('enterBtn').onclick=async()=>{const nick=$('nickInput').value.trim();if(!nick) return alert('Apelido obrigatório');let avatar=null;if($('avatarInput').files[0]) avatar=await readFileAsDataURL($('avatarInput').files[0]);doLogin(nick,avatar);};
+  $('sendBtn').onclick=()=>{addMessage($('msgInput').value);$('msgInput').value='';autoResizeTA($('msgInput'));};
+  $('msgInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addMessage(e.target.value);e.target.value='';autoResizeTA(e.target);} else setTimeout(()=>autoResizeTA(e.target),0);});
+  $('logoutBtn').onclick=doLogout;
+  $('clearMyBtn').onclick=()=>{if(confirm('Apagar somente suas mensagens?')) clearOnlyMyMessages();};
+  window.addEventListener('storage',e=>{if(e.key===MESSAGES_KEY||e.key===USER_KEY) loadState(); render();});
+  render();autoResizeTA($('msgInput'));
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
